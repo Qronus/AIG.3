@@ -9,15 +9,17 @@ using Games
 # defines the simultaneous game
 function init()
 
-if "y" == uppercase(Int,query("\n*****Simultaneous games ****\n\n\t2.define own game?(y/n)\n\n\tchoice: "))
+if uppercase("n") == uppercase(query("\n*****Simultaneous games ****\n\nDefine own game?(y/n)\n\n\tchoice: "))
     mat = Array{Float64}(undef, 2, 2, 2)
     mat[1, 1, :] = [3, 2]  
     mat[1, 2, :] = [2, 2]
     mat[2, 1, :] = [2, 3]
     mat[2, 2, :] = [5, 0]
-    sim = NormalFormGame(pennies)
+
+    sim = NormalFormGame(mat)
+    determineStrategy(sim)
     output(sim)
-end
+else
 
 
 
@@ -34,6 +36,7 @@ println("Defining own game\n")
             end
         end
         game = NormalFormGame(matrix)
+        determineStrategy(game)
         output(game)
     else
 
@@ -59,19 +62,59 @@ println("Defining own game\n")
         p2 = Player(p2)
 
         game = NormalFormGame(p1,p2)
+        determineStrategy(game)
         output(game)
     end
 
-  
+  end
 end
 
 #-----------------------------------------------------------------
 
 function determineStrategy(game)
 
-    best_responses(game.players[1], [0.5, 0.5])
-   game.player1[1].
 
+    a = query("\n\nwhat is player1's first strategy e.g(a): ")
+    b = query("\nwhat is player1's second strategy e.g(b): ")
+
+    c = query("\nwhat is player2's first strategy e.g(c): ")
+    d = query("\nwhat is player2's second strategy e.g(d): ")
+
+
+    act11 = game.players[1].payoff_array[1] + game.players[1].payoff_array[3]
+
+    act12 = game.players[1].payoff_array[2] +game.players[1].payoff_array[4]  
+
+    act21 = game.players[2].payoff_array[1] + game.players[2].payoff_array[2]
+    act22 = game.players[2].payoff_array[3] + game.players[2].payoff_array[4]
+
+println("\n")
+
+    if act11 > act12
+        println("player1  dominant strategy: $a\n         dominated stratergy: $b")
+    end
+
+    if act12 > act11
+        println("player1  dominant strategy: $b\n         dominated stratergy: $a")
+    elseif act11 == act12
+        println("player1's strategies are equal")
+    end
+
+
+     if(act21>act22)
+        println("player2  dominant strategy: $c\n         dominated stratergy: $d")
+    elseif(act22>act21)
+        println("player2  dominant strategy: $d\n         dominated stratergy: $c")
+    else
+        println("player2's strategies are equal")
+    end
+
+   # best_responses(game.players[1], game.players[1])
+   
+
+
+   
+    return
 end
 
 #-----------------------------------------------------------------
@@ -83,7 +126,7 @@ function output(game::NormalFormGame)
     if equilibriaNo == 0
         str = "no pure Nash equilibrium found"
     elseif equilibriaNo == 1
-        str = "There is 1 equilibrium:\n$(equilibria[1])"
+        str = "There is 1 equilibrium at:\n$(equilibria[1])"
     else
         str = "There is $equilibriaNo  equilibria:\n"
         for (i, E) in enumerate(equilibria)
@@ -91,7 +134,7 @@ function output(game::NormalFormGame)
         end
     end
     println(join(["\n",str]))
-    return
+    
 end
 
 #-----------------------------------------------------------------
